@@ -103,7 +103,7 @@ class VGG_16(nn.Module):
 
 
 vgg = VGG_16()
-criterion = torch.nn.CrossEntropyLoss()
+criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(vgg.parameters())
 
 start_time = datetime.now()
@@ -113,10 +113,10 @@ training_loss = []
 for epoch in range(num_epochs):
     running_loss = 0.0
     # for i in range(0, y_train.shape[0]):
-    inputs = X_train
-    labels = y_train
+    inputs = X_train.float()
+    labels = y_train.float()
 
-    print(inputs.shape)
+    #print(inputs.shape)
     # zero the parameter gradients
     optimizer.zero_grad()
 
