@@ -3,6 +3,7 @@ Project Overview
 This project implements two key components:
 
 Category Classification: Fine-tuning a BERT model for classifying text into predefined categories.
+
 Resume Scoring: Using CNN and VGG architectures to predict resume scores based on feature inputs.
 
 Dataset description:
@@ -10,27 +11,21 @@ https://huggingface.co/datasets/ahmedheakl/resume-atlas
 
 Table of Contents
 
-Environment Setup
-Dataset Preparation
-Model Training
-Model Evaluation
-Running the Code
+1. Environment Setup
 
-project-name/
-│
-├── data/
-│   ├── Preprocessed_Data.csv
-│   ├── resume_data.csv
-│
-├── checkpoints/
-│
-├── train_bert.py
-├── evaluate_bert.py
-├── train_cnn.py
-├── evaluate_cnn.py
-├── predict.py
-├── requirements.txt
-└── README.md
+2. Dataset Preparation
+
+3. Model Training
+
+4. Model Evaluation
+
+5. Running the Code
+
+To run this project, ensure your system meets the following requirements and dependencies.
+
+To run code for Category Classification with BERT, run train_bert.py
+
+To run code for Resume Scoring with CNN/VGG, run shallow_cnn.py
 
 
 
