@@ -21,18 +21,8 @@ X_test_scaled = scaler.transform(X_test)
  
 isolation_forest = IsolationForest(contamination=0.05, random_state=42)
 isolation_forest.fit(X_train_scaled)
-anomaly_scores = isolation_forest.decision_function(X_train_scaled)
+anomaly_scores = isolation_forest.decision_function(X_test_scaled)
 normalized_scores = (anomaly_scores - anomaly_scores.min()) / (anomaly_scores.max() - anomaly_scores.min()) * 5
 
+# Closer to 0 is more "anomalous", closer to 5 is more "normal"
 print("Similarity Scores: ", normalized_scores)
-
-y_pred = isolation_forest.predict(X_test_scaled)
-y_pred_binary = [1 if pred == 1 else 0 for pred in y_pred]
- 
-threshold = 3.5
-y_test_binary = (y_test > threshold).astype(int) 
-
-print(y_test_binary)
-
-
-
