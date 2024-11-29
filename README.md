@@ -21,7 +21,17 @@ Table of Contents
 
 5. Running the Code
 
-To run this project, ensure your system meets the following requirements and dependencies.
+1.To run this project, ensure your system meets the following requirements and dependencies.
+torch==1.11.0
+transformers==4.28.1
+scikit-learn==1.0.2
+pandas==1.3.3
+numpy==1.21.2
+matplotlib==3.4.3
+tqdm==4.62.3
+
+2.Dataset Preparation 
+Please see the Preprocessed_Data.csv, test_normalized_cv.csv and train_normalized_cv.csv
 
 To run code for Category Classification with BERT, run train_bert.py
 
