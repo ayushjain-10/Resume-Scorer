@@ -15,11 +15,7 @@ Table of Contents
 
 2. Dataset Preparation
 
-3. Model Training
-
-4. Model Evaluation
-
-5. Running the Code
+3. Running the Code
 
 1.To run this project, ensure your system meets the following requirements and dependencies.
 torch==1.11.0
@@ -33,9 +29,9 @@ tqdm==4.62.3
 2.Dataset Preparation 
 Please see the Preprocessed_Data.csv, test_normalized_cv.csv and train_normalized_cv.csv
 
-To run code for Category Classification with BERT, run train_bert.py
+3. To run code for Category Classification with BERT, run train_bert.py
 
-To run code for Resume Scoring with CNN/VGG, run shallow_cnn.py
+   To run code for Resume Scoring with CNN/VGG, run shallow_cnn.py
 
 
 
