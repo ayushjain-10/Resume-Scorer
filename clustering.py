@@ -125,6 +125,8 @@ print("Cluster results saved to resume_clusters.csv!")
 # Visualization using PCA
 pca = PCA(n_components=2)
 reduced_embeddings = pca.fit_transform(embeddings.numpy())
+
+np.save("reduced_embeddings.npy", reduced_embeddings)
  
 plt.figure(figsize=(12, 8))
 scatter = plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=kmeans.labels_, cmap="tab10", s=50)
@@ -141,6 +143,8 @@ plt.savefig("resume_clusters_visualization.png")
 plt.show()
 
 
+# Perform PCA for visualization
+ 
 
 
 
