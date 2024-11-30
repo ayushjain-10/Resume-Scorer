@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Scorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="content">
+            <h1 class="title">🌟 Resume Scorer 🌟</h1>
+            <p class="subtitle">Upload your resume and get a score out of 100!</p>
+            <div class="upload-area">
+                <label for="resumeUpload" class="upload-label">
+                    <img src="assets/upload-icon.png" alt="Upload Icon">
+                    <span>Click to Upload PDF</span>
+                </label>
+                <input type="file" id="resumeUpload" accept="application/pdf" hidden>
+            </div>
+            <button id="scoreButton" class="btn">Get Score</button>
+            <div id="result" class="hidden">
+                <h2 class="score-display">Your Resume Score: <span id="score">0</span>/100</h2>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
