@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
-import ResumeRater.pad_data as pad
+#import ResumeRater.pad_data as pad
+import pad_data
+import generate_embeddings
 import os
 from PIL import Image
 from sklearn.cluster import KMeans
@@ -8,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import torch.nn as nn
-from ResumeRater import generate_embeddings
+#from ResumeRater import generate_embeddings
 
 class shallow_CNN(nn.Module):
     def __init__(self):
@@ -48,7 +50,7 @@ class shallow_CNN(nn.Module):
         x = torch.sigmoid(x)
         return x
 
-state_dict = torch.load("ResumeRater/shallow_cnn.pth")
+state_dict = torch.load("shallow_cnn.pth")
 model = shallow_CNN()
 model.load_state_dict(state_dict)
 
@@ -75,7 +77,7 @@ for f in folders:
             if image_path in tensors.keys():
                 continue
             image = Image.open(image_path)
-            tensor = pad.resize_transform(image)
+            tensor = pad_data.resize_transform(image)
             # print(tensor.shape)
             tensors[image_path] = (tensor)
             # tensor = pad.pad_channels(tensor)
@@ -84,7 +86,7 @@ for f in folders:
 
 combined_tensor = (list(tensors.values()))
 c = max([i.shape for i in combined_tensor])[0]
-padded_combined = pad.pad_channels(combined_tensor, c = c)
+padded_combined = pad_data.pad_channels(combined_tensor, c = c)
 padded_tensor = torch.stack(padded_combined)
 
 with torch.no_grad():
@@ -113,5 +115,32 @@ embeddings = torch.stack(embeddings)
 kmeans = KMeans(n_clusters=24, random_state=42, max_iter = 300)
 kmeans.fit(embeddings.numpy())
 
+# Creating CSV with clusters
+results = {"File Name": [pt.file_name for pt in data_pts], "Cluster": kmeans.labels_.tolist()}
+results_df = pd.DataFrame(results)
+results_df.to_csv("resume_clusters.csv", index=False)
+ 
+print("Cluster results saved to resume_clusters.csv!")
+ 
+# Visualization using PCA
+pca = PCA(n_components=2)
+reduced_embeddings = pca.fit_transform(embeddings.numpy())
+ 
+plt.figure(figsize=(12, 8))
+scatter = plt.scatter(reduced_embeddings[:, 0], reduced_embeddings[:, 1], c=kmeans.labels_, cmap="tab10", s=50)
+plt.colorbar(scatter, label="Cluster")
+plt.title("Resumes Clustering Visualization (PCA)")
+plt.xlabel("PCA Component 1")
+plt.ylabel("PCA Component 2")
+plt.grid(True)
+
 for i, pt in enumerate(data_pts):
-    print(f"{pt.file_name} is in cluster {kmeans.labels_[i]}")
+    plt.annotate(f"Resume {i}", (reduced_embeddings[i, 0], reduced_embeddings[i, 1]), fontsize=8, alpha=0.75)
+ 
+plt.savefig("resume_clusters_visualization.png")
+plt.show()
+
+
+
+
+
