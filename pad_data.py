@@ -12,7 +12,7 @@ import ast
 import json
 import cv2
 
-def pad_channels(X, h = 224, w = 224, c = 0):
+def pad_channels(X, h = 244, w = 244, c = 0):
     if c==0: #the user has not specified a number of channels
         max_c = int(max(x.shape[0] for x in X))
     else:
@@ -30,7 +30,7 @@ def pad_channels(X, h = 224, w = 224, c = 0):
     return X_padded
 
 def resize_transform(tensor):
-    resize = transforms.Compose([transforms.Resize((224, 224)), transforms.ToTensor()])
+    resize = transforms.Compose([transforms.Resize((244, 244)), transforms.ToTensor()])
     return resize(tensor)
 
 def main():

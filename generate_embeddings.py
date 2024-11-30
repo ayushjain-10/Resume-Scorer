@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import pad_data as pad
 import os
 from PIL import Image
 
@@ -44,6 +43,23 @@ class shallow_CNN(nn.Module):
 
 def hook_fn(module, input, output):
     intermediate_outputs[module] = output
+
+def ret_embeddings(padded_tensor):
+    state_dict = torch.load("ResumeRater/shallow_cnn.pth")
+    state_dict.keys()
+    model = shallow_CNN()
+    model.load_state_dict(state_dict)
+    
+    intermediate_outputs = {}
+    
+    for name, layer in model.named_modules():
+        if name in ["fc2"]:  # Specify layer names to hook
+            layer.register_forward_hook(hook_fn)
+            
+    with torch.no_grad():
+        output = model(padded_tensor)
+        
+    return intermediate_outputs
 
 def main():
 	state_dict = torch.load("ResumeRater/shallow_cnn.pth")
