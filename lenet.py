@@ -9,10 +9,11 @@ from datetime import datetime
 X_train = torch.load("X_train_tensor.pt")
 X_test = torch.load("X_test_tensor.pt")
 
-train_df = pd.read_csv("ResumeRater\\Preprocessed_data_CNN\\Train_normalized_CV.csv")
+
+train_df = pd.read_csv("C:\\Users\\brooklyn\\OneDrive\\Documents\\School\\AI\\ResumeRater\\Preprocessed_data_CNN\\Train_normalized_CV.csv")
 train_df = train_df.drop("Unnamed: 0", axis = 1)
 
-test_df = pd.read_csv("ResumeRater\\Preprocessed_data_CNN\\Test_normalized_CV.csv")
+test_df = pd.read_csv("C:\\Users\\brooklyn\\OneDrive\\Documents\\School\\AI\\ResumeRater\\Preprocessed_data_CNN\\Test_normalized_CV.csv")
 test_df = test_df.drop("Unnamed: 0", axis = 1)
 
 train_labels = train_df.drop(["File name", "Avg Format score"], axis = 1)
@@ -24,20 +25,20 @@ y_test = test_labels.values
 y_test = torch.tensor(y_test)
 
 class LeNet(nn.Module):
-    def __init__(self, input_channels=3, num_classes=2):
+    def __init__(self, input_channels=4, num_classes=3):
         super(LeNet, self).__init__()
         self.conv_layers = nn.Sequential(
             # C1: Convolutional Layer 1 
             nn.Conv2d(in_channels=input_channels, out_channels=6, kernel_size=5, stride=1, padding=0),
             nn.BatchNorm2d(6),  
-            nn.Tanh(), 
+            nn.ReLU(), 
             # S2: Average Pooling Layer
             nn.AvgPool2d(kernel_size=2, stride=2),
 
             # C3: Convolutional Layer 2 
             nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
             nn.BatchNorm2d(16), 
-            nn.Tanh(), 
+            nn.ReLU(), 
 
             # S4: Average Pooling Layer
             nn.AvgPool2d(kernel_size=2, stride=2),
@@ -48,14 +49,15 @@ class LeNet(nn.Module):
 
             # FC5: Fully Connected Layer 1
             nn.Linear(16 * 53 * 53, 120),
-            nn.Tanh(),  
+            nn.ReLU(),  
 
             # FC6: Fully Connected Layer 2
             nn.Linear(120, 84),
-            nn.Tanh(),  
+            nn.ReLU(),  
 
             # Output layer
-            nn.Linear(84, num_classes)
+            nn.Linear(84, num_classes),
+            nn.ReLU()
         )
 
     def forward(self, x):
@@ -70,7 +72,7 @@ criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(lenet.parameters())
 
 start_time = datetime.now()
-num_epochs = 1
+num_epochs = 50
 training_loss = []
 
 for epoch in range(num_epochs):
@@ -105,4 +107,6 @@ with torch.no_grad():
 	preds = lenet(X_test)
 loss = mse_loss(preds, y_test)
 
+
 print("MSE Loss: ", loss.item())
+print(preds)
