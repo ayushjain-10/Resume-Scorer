@@ -29,10 +29,10 @@ class LeNet(nn.Module):
         super(LeNet, self).__init__()
         self.conv_layers = nn.Sequential(
             # C1: Convolutional Layer 1 
-            nn.Conv2d(in_channels=input_channels, out_channels=6, kernel_size=5, stride=1, padding=0),
+            nn.Conv2d(in_channels=input_channels, out_channels=6, kernel_size=5, stride=1, padding=0), #
             nn.BatchNorm2d(6),  
             nn.ReLU(), 
-            # S2: Average Pooling Layer
+            # S2: Average Pooling Layer 210
             nn.AvgPool2d(kernel_size=2, stride=2),
 
             # C3: Convolutional Layer 2 
@@ -40,7 +40,7 @@ class LeNet(nn.Module):
             nn.BatchNorm2d(16), 
             nn.ReLU(), 
 
-            # S4: Average Pooling Layer
+            # S4: Average Pooling Layer 
             nn.AvgPool2d(kernel_size=2, stride=2),
         )
 
