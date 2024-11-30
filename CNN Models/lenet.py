@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 import pandas as pd
 import numpy as np
 import warnings
@@ -8,6 +9,7 @@ from datetime import datetime
 
 X_train = torch.load("X_train_tensor.pt")
 X_test = torch.load("X_test_tensor.pt")
+print(X_train.shape)
 
 
 train_df = pd.read_csv("C:\\Users\\brooklyn\\OneDrive\\Documents\\School\\AI\\ResumeRater\\Preprocessed_data_CNN\\Train_normalized_CV.csv")
@@ -29,10 +31,10 @@ class LeNet(nn.Module):
         super(LeNet, self).__init__()
         self.conv_layers = nn.Sequential(
             # C1: Convolutional Layer 1 
-            nn.Conv2d(in_channels=input_channels, out_channels=6, kernel_size=5, stride=1, padding=0), #
+            nn.Conv2d(in_channels=input_channels, out_channels=6, kernel_size=5, stride=1, padding=0),
             nn.BatchNorm2d(6),  
             nn.ReLU(), 
-            # S2: Average Pooling Layer 210
+            # S2: Average Pooling Layer
             nn.AvgPool2d(kernel_size=2, stride=2),
 
             # C3: Convolutional Layer 2 
@@ -40,7 +42,7 @@ class LeNet(nn.Module):
             nn.BatchNorm2d(16), 
             nn.ReLU(), 
 
-            # S4: Average Pooling Layer 
+            # S4: Average Pooling Layer
             nn.AvgPool2d(kernel_size=2, stride=2),
         )
 
@@ -58,13 +60,13 @@ class LeNet(nn.Module):
             # Output layer
             nn.Linear(84, num_classes),
             nn.Sigmoid()
+            
         )
 
     def forward(self, x):
         x = self.conv_layers(x)
 
         x = self.fc_layers(x)
-
         return x
 
 lenet = LeNet()
@@ -99,7 +101,7 @@ for epoch in range(num_epochs):
 
 print('Finished Training')
 
-torch.save(lenet.state_dict(), 'lenet_5.pth')
+torch.save(lenet.state_dict(), 'lenet_5.pth')   
 
 mse_loss = nn.MSELoss()
 
@@ -107,6 +109,7 @@ with torch.no_grad():
 	preds = lenet(X_test)
 loss = mse_loss(preds, y_test)
 
-
 print("MSE Loss: ", loss.item())
+torch.set_printoptions(precision=3, sci_mode=False)
+
 print(preds)
