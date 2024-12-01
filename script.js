@@ -36,7 +36,7 @@ document.getElementById("scoreButton").addEventListener("click", async (event) =
     formData.append("file", file);
 
     try {
-        const response = await fetch("http://localhost:8000/classify/", {
+        const response = await fetch("https://resumerater-final-falling-star-2923.fly.dev/classify/", {
             method: "POST",
             body: formData,
         });
