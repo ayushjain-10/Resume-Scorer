@@ -1,20 +1,28 @@
-# Use a lightweight Python image
+# Use Python as base image
 FROM python:3.11-slim
-
-# Install system-level dependencies, including libGL
-RUN apt-get update && apt-get install -y python3-dev gcc libffi-dev libssl-dev libgl1
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    python3-dev \
+    gcc \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgl1-mesa-glx \
+    poppler-utils
 
-# Copy the entire application
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code
 COPY . .
 
-# Expose the port your app runs on
+# Expose port 8000 for FastAPI
 EXPOSE 8000
 
 # Start the application

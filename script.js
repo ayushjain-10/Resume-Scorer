@@ -36,7 +36,7 @@ document.getElementById("scoreButton").addEventListener("click", async (event) =
     formData.append("file", file);
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/classify/", {
+        const response = await fetch("http://localhost:8000/classify/", {
             method: "POST",
             body: formData,
         });
