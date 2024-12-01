@@ -214,6 +214,4 @@ print(f"Predicted Class: {predicted_class.item()}")
 predicted_category = label_encoder.inverse_transform([predicted_class.item()])
 print(f"Predicted Category: {predicted_category[0]}")
 
-#######Example:
-Predicted Class: 0
-Predicted Category: Accountant
+#######Example
