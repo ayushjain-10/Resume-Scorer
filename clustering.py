@@ -10,7 +10,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import torch.nn as nn
+import pandas as pd
 #from ResumeRater import generate_embeddings
+import pickle
 
 class shallow_CNN(nn.Module):
     def __init__(self):
@@ -50,7 +52,7 @@ class shallow_CNN(nn.Module):
         x = torch.sigmoid(x)
         return x
 
-state_dict = torch.load("shallow_cnn.pth")
+state_dict = torch.load("CNN Models\\shallow_cnn.pth")
 model = shallow_CNN()
 model.load_state_dict(state_dict)
 
@@ -63,9 +65,19 @@ for name, layer in model.named_modules():
     if name in ["fc2"]:  
         layer.register_forward_hook(hook_fn)
 
+
+already_clustered = pd.read_csv("resume_clusters.csv")
+
+already_clustered = already_clustered["File Name"]
+already_clustered = np.array(already_clustered)
+
+#print(already_clustered)
 init_path = "C:\\Users\\Tanvi\\Desktop\\Resumes Datasets"
 folders = os.listdir("C:\\Users\\Tanvi\\Desktop\\Resumes Datasets")
 tensors = {}
+count = 0
+
+print("Processing images..")
 for f in folders:
     #print(f)
     files = os.listdir(init_path + "\\" + f)
@@ -73,29 +85,40 @@ for f in folders:
         path = "C:\\Users\\Tanvi\\Desktop\\Resumes Datasets\\" + f + "\\" + i #replace with the path to data here
         subdir = os.listdir(path)
         for j in subdir:
+            if count==5000:
+                break
             image_path = path + "\\" + j
+            if image_path in already_clustered:
+            	continue
             if image_path in tensors.keys():
                 continue
             image = Image.open(image_path)
             tensor = pad_data.resize_transform(image)
             # print(tensor.shape)
             tensors[image_path] = (tensor)
+            count += 1
             # tensor = pad.pad_channels(tensor)
             # with torch.no_grad():
             #     output = model(input_tensor)
+        if count==5000:
+            break
+    if count==5000:
+        break
+      
 
 combined_tensor = (list(tensors.values()))
 c = max([i.shape for i in combined_tensor])[0]
 padded_combined = pad_data.pad_channels(combined_tensor, c = c)
 padded_tensor = torch.stack(padded_combined)
 
+print("Predicting outputs..")
 with torch.no_grad():
     output = model(padded_tensor)
 
 embeddings = intermediate_outputs[list(intermediate_outputs.keys())[0]]
 
 objects = {}
-for i in range(0, 11874):
+for i in range(0, len(tensors.keys())):
     objects[list(tensors.keys())[i]] = embeddings[i]
 
 class data_points():
@@ -103,6 +126,8 @@ class data_points():
         self.file_name = file_name
         self.embedding = embedding
 
+
+print("Creating dictionary..")
 data_pts = []
 for i in objects.keys():
     temp = data_points(i, objects[i])
@@ -112,13 +137,20 @@ embeddings = [pt.embedding for pt in data_pts]
 embeddings = torch.stack(embeddings)
 
 
-kmeans = KMeans(n_clusters=24, random_state=42, max_iter = 300)
-kmeans.fit(embeddings.numpy())
+print("Clustering..")
+#kmeans = KMeans(n_clusters=24, random_state=42, max_iter = 300)
+kmeans = joblib.load("kmeans_model.pkl")
+kmeans.partial_fit(new_data)
+#kmeans.fit(embeddings.numpy())
+
+
+with open("kmeans_model.pkl", "wb") as f:
+    pickle.dump(kmeans, f)
 
 # Creating CSV with clusters
 results = {"File Name": [pt.file_name for pt in data_pts], "Cluster": kmeans.labels_.tolist()}
 results_df = pd.DataFrame(results)
-results_df.to_csv("resume_clusters.csv", index=False)
+results_df.to_csv("resume_clusters.csv", index=False, mode = 'a')
  
 print("Cluster results saved to resume_clusters.csv!")
  
@@ -142,8 +174,6 @@ for i, pt in enumerate(data_pts):
 plt.savefig("resume_clusters_visualization.png")
 plt.show()
 
-
-# Perform PCA for visualization
  
 
 
