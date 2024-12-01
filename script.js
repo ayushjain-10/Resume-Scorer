@@ -8,9 +8,8 @@ document.getElementById("scoreButton").addEventListener("click", async (event) =
 
     const fileInput = document.getElementById("resumeUpload");
     const resultDiv = document.getElementById("result");
-    const classificationDiv = document.getElementById("classification-result");
-    const similarityDiv = document.getElementById("similarity-result"); // Correctly reference the similarity div
-    const scoreSpan = document.getElementById("score");
+    const classificationResultDiv = document.getElementById("classification-result");
+    const similarityResultDiv = document.getElementById("similarity-result");
 
     if (!fileInput.files.length) {
         alert("Please upload a PDF file!");
@@ -19,57 +18,56 @@ document.getElementById("scoreButton").addEventListener("click", async (event) =
 
     const file = fileInput.files[0];
 
-    if (file.type !== "application/pdf") {
-        alert("Only PDF files are allowed!");
+    if (file.type !== "application/pdf" && file.type !== "image/png" && file.type !== "image/jpeg") {
+        alert("Only PDF or image files are allowed!");
         return;
     }
 
-    // Generate a random score (simulate scoring logic)
-    const score = Math.floor(Math.random() * 30) + 70; // Score range: 70-100
-    scoreSpan.textContent = score;
-
-    // Display the result container
+    // Display loading state
+    resultDiv.innerHTML = "Processing...";
     resultDiv.classList.remove("hidden");
 
-    // Send the file to the backend API for job category classification
+    // Send the file to the backend API
     const formData = new FormData();
     formData.append("file", file);
 
     try {
-        const response = await fetch("https://resumerater-final-falling-star-2923.fly.dev/classify/", {
+        const response = await fetch("http://localhost:8000/classify/", {
             method: "POST",
             body: formData,
         });
 
         if (!response.ok) {
-            throw new Error(`Server responded with status ${response.status}`);
+            throw new Error("Failed to classify the resume.");
         }
 
         const data = await response.json();
-        console.log("Backend response:", data); // Debug log
 
         if (data.error) {
-            classificationDiv.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+            alert(data.error);
             return;
         }
 
-        // Display the predicted class index and category
-        classificationDiv.innerHTML = `
-            <p><strong>Predicted Class Index:</strong> ${data.index}</p>
-            <p><strong>Job Category:</strong> ${data.category}</p>
+        // Update the result display
+        resultDiv.innerHTML = ""; // Clear previous content
+        classificationResultDiv.innerHTML = `
+            <h3>Job Category: ${data.category}</h3>
         `;
-
-        // Display similar resumes
-        const similarResumesHTML = data.similar_resumes
-            .map(resume => `<li>${resume}</li>`)
-            .join("");
-        similarityDiv.innerHTML = `
-            <p><strong>Top 10 Similar Resumes:</strong></p>
-            <ul>${similarResumesHTML}</ul>
+        similarityResultDiv.innerHTML = `
+            <h3>Similarity Score: ${data.similarity_score}</h3>
+            <h4>Top Similar Resumes:</h4>
+            <ul>
+                ${data.similar_resumes
+                    .map(
+                        (resume) => `<li><a href="${resume}" target="_blank">${resume}</a></li>`
+                    )
+                    .join("")}
+            </ul>
         `;
-
+        resultDiv.appendChild(classificationResultDiv);
+        resultDiv.appendChild(similarityResultDiv);
     } catch (error) {
-        console.error("Error occurred:", error); // Debug the error
-        classificationDiv.innerHTML = `<p style="color: red;">An error occurred while classifying the resume. Please try again.</p>`;
+        console.error(error);
+        alert("An error occurred while classifying the resume.");
     }
 });
