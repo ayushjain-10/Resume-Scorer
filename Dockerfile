@@ -1,5 +1,4 @@
-# Use a lightweight Python image
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 # Install system-level dependencies
 RUN apt-get update && apt-get install -y python3-dev gcc libffi-dev libssl-dev
